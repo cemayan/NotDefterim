@@ -1,0 +1,340 @@
+﻿@model dynamic
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+<div class="row">
+
+    <div class="col col-sm-4">
+
+
+        <div class="panel panel-default bosluk">
+            <div  style="background-image:url('@Model.Bilgiler.ArkaPlan');height:150px;background-position:center;background-size:cover" class="img img-rounded">
+                <img id="profil" style="width:100px;height:100px;margin-top:90px;margin-left:10px" src="@Model.Bilgiler.Resim" class="img img-rounded img-thumbnail" />
+            </div>
+
+                <div class="row">
+    
+                
+                    <div class="col col-sm-12 " align="center">
+                        
+                        <b style="font-size:medium">@Model.Bilgiler.Ad&nbsp;@Model.Bilgiler.Soyad</b>
+                        <br />
+                        <a  class="renk2 isaretci">@@@Model.Bilgiler.KullaniciAdi</a>
+                        <hr />
+                        <div class="row">
+                            <div class="col col-sm-4"  id="kutu1">
+                                <span class="fa fa-user fa-2x renk" aria-hidden="true"></span>
+                                <br />
+                                <p class="renk2">@Model.TakipeSayi</p>
+                            </div>
+                            <div class="col col-sm-4"  id="kutu2">
+                                <span class="fa fa-users fa-2x renk" aria-hidden="true"></span>
+                                <br />
+                                <p class="renk2">@Model.TkpcSayi</p>
+
+                            </div>
+                            <div class="col col-sm-4"  id="kutu3">
+                                <span class="fa fa-pencil fa-2x renk" aria-hidden="true"></span>
+                                <br />
+                                <p class="renk2">@Model.GondrSayi</p>
+
+                            </div>
+
+                        </div>
+    
+                    </div>
+                </div>
+
+
+
+
+        </div>
+
+
+
+
+        <div class="panel panel-default bosluk">
+
+
+              <span class="renk2" style="font-size:large">Gündem</span>&nbsp;&nbsp;&nbsp;<a class="isaretci" style="font-size:x-small">Değiştir</a>
+       <hr />
+            @foreach (var item in Model.Gundem)
+            {
+                <div class="row">
+                    <div class="col col-sm-8">                     
+                        <a class="isaretci"><b>@item.Baslik</b></a>
+                        <br />
+                        <a class="isaretci" style="color:lightslategray;font-size:small">@item.Sayac &nbsp;Gönderi</a>
+                    </div>
+
+                </div>
+                    <br />
+            }
+
+        </div>
+
+
+
+        <div class="panel panel-default bosluk">
+
+
+            <span class="renk2" style="font-size:large ">Kimi Takip Etmeli</span>&nbsp;&nbsp;&nbsp;<a class="isaretci" style="font-size:x-small">Tümünü görüntüle</a>
+            <hr />
+                @foreach (var item in Model.ArkadaslarT)
+            {
+                    <div class="row">
+                        <div class="col col-sm-2">
+                            <a href=""><img class="img img-rounded" src="@item.Resim" style="width:50px;height:50px;" /></a>
+                        </div>
+                        <div class="col col-sm-8">
+                            <a href="" style="color:black;text-decoration:none"><b> @item.Ad &nbsp; @item.Soyad </b></a>&nbsp;<a class="isaretci" style="font-size:small;color:lightslategray;text-decoration:none">@@@item.KullaniciAdi</a><br />
+                            <button type="button"  onclick="Takip('@item.ID')"  id="takip" class="btn btn-default btn-sm">
+                                <span id="takipr"  class="fa fa-user-plus renk2" aria-hidden="true"></span>&nbsp;<a  id="takipy" style="text-decoration:none;color:black">Takip&nbsp;et</a>
+                            </button>
+                        </div>
+                     
+                    </div>
+                        <br />
+                }
+                 
+        </div>
+
+    </div>
+
+
+    <div class="col col-sm-8">
+        <div class="panel panel-default bosluk arkarenk2">
+                <form>
+                    <div class="form-group">
+                        <textarea  class="form-control" id="yazi" data-autocomplete="@Url.Action("Gundem", "Anasayfa")" placeholder="Bişeyler yaz..." rows="1"></textarea>   <br />  
+                        <div class="" id="pkutu" style="">  
+                            <i class="fa fa-picture-o fa-2x isaretci renk" aria-hidden="true"></i> &emsp;<i class="fa fa-map-marker fa-2x isaretci renk" aria-hidden="true"></i> &emsp;<i class="fa fa-video-camera fa-2x isaretci renk" aria-hidden="true"></i>        
+                            <input type="button" class="btn btn-default gonder arkarenk2" id="btn"  style="float:right;" value="Gönder" />   
+                        </div>          
+                    </div>        
+                </form>
+            </div>
+
+        <script>
+
+    
+        </script>
+
+
+        <div class="panel panel-default">
+
+            @*<div class="panel panel-info bosluk2" align="center" >
+
+               <a class="isaretci">3 yeni paylaşım</a>
+
+            </div>*@
+                <div>
+
+                    <p id="Data"></p>
+
+                    <script type="text/javascript">
+
+                        $(document).ready(function () {
+                            $.ajaxSetup({ cache: false });
+
+                            $.getJSON('@Url.Action("All","Anasayfa")')
+                                .done(function (data) {
+
+                                    var veri = "";
+
+                                    $.each(data, function (key, value) {
+                                        veri +="<div class='row bosluk'>"
+                                        veri += "<div class='col col-sm-1'><a href='/Profil/Kullanici/"+value.UyeID+"'><img class='img img-rounded' src=" + value.UyeResim + " style='width:50px;height:50px;' /></a></div>";
+                                        veri += "<div class='col col-sm-8'>";
+                                        veri += "<a href='/Profil/Kullanici/" + value.UyeID + "'  style='text-decoration:none;color:black;'><b>" + value.UyeAd + "&nbsp;" + value.UyeSoyad + "</b></a>&nbsp;<a class='isaretci' href='/Profil/Kullanici/" + value.UyeID + "' style='font-size:small;color:lightslategray'>@@" + value.KullaniciAdi + "</a><br />";
+                                        veri += " <p>" + value.Paylasim + " </p>";
+                                        veri += "<i class='fa fa-reply isaretci'  aria-hidden='true'></i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp<i class='fa fa-heart-o isaretci' id='begen' aria-hidden='true'></i>&nbsp;<a id='begens' value=" + value.Begen + " ></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class='fa fa-share isaretci' aria-hidden='true'></i>";
+                                        veri += "</div></div><hr>";
+
+
+
+                                    })
+
+
+                                    $("#Data").html(veri);
+
+                                    $("#Data #begen").mouseover(function(){
+
+                                        $(this).attr("class","fa fa-heart");
+
+                                    }).mouseout(function(){
+
+                                        $(this).attr("class", "fa fa-heart-o");
+
+                                    });
+
+                                    var tt = $("#begens").val();
+                                    if (tt == 0) {
+                                        $("#begens").css("visibility", "hidden");
+                                    }
+
+
+
+
+                                });
+                        });
+
+
+                    </script>
+                </div>
+        </div>
+     </div>
+   <script>
+
+   
+  
+       $("#yazi").focus(function () {
+           $(this).attr("rows", "4");
+       }).focusout(function () {
+           $(this).attr("rows", "1");
+       }).keypress(function (data) {
+           if (data.key == '#') {
+               $(this).autocomplete({
+                   source: $(this).attr("data-autocomplete"),
+                    
+               })
+               $(this).autocomplete('close');
+           }
+           else if (data.which == 32) {
+               $(this).autocomplete({
+                   source: $(this).attr("data-autocomplete")
+               })
+           }
+
+           });
+
+
+       $('#btn').on("mousedown", function(e) {
+           Ekle();    
+       });
+  
+ 
+
+       function Ekle() {
+
+           if($("#yazi").val()==""){
+               toastr.error("Lütfen Boş Bırakmayınız");
+           }
+           else{
+
+               function getGuid(str){
+                   return str.slice(0,8)+"-"+str.slice(8,12)+"-"+str.slice(12,16)+
+                   "-"+str.slice(16,20)+"-"+str.slice(20,str.length+1)
+               }
+
+
+               var data = {
+                   Paylasim: $("#yazi").val(),
+                   PaylasimResim: "-",
+                   PaylasimVideo: "-",
+                   Begen: 0,
+                   Favori: 0,
+                   PaylasimTur_ID: 1,
+                   Uyeler_ID: '@Model.Bilgiler.ID',
+               };
+
+               $.ajax({
+                   url: '@Url.Action("Add","Anasayfa")',
+                   data: JSON.stringify(data),
+                   type: 'POST',
+                   dataType: 'json',
+                   contentType: "application/json; charset=utf-8",
+                   error: function (ex, status) {
+                       console.log(ex);
+                       console.log(status);
+                       toastr.error('İşlem kaydı sırasında bir hata oluştu !');
+                   },
+                   success: function (result) {
+                          
+                       $("#yazi").val('');
+                       Yenile();
+                      
+                   }
+               });
+           }
+
+       };
+
+
+
+       function Yenile(){
+           $.getJSON('@Url.Action("All","Anasayfa")')
+                                .done(function (data) {
+
+                                    var veri = "";
+
+                                    $.each(data, function (key, value) {
+                                        veri +="<div class='row bosluk'>"
+                                        veri += "<div class='col col-sm-1'><img class='img img-rounded' src=" + value.UyeResim + " style='width:50px;height:50px;' /></div>";
+                                        veri += "<div class='col col-sm-8'>";
+                                        veri += "<b>" + value.UyeAd + "&nbsp;" + value.UyeSoyad + "</b>&nbsp;<a class='isaretci' style='font-size:small;color:lightslategray'>@@lambofgod</a><br />";
+                                        veri += " <p>" + value.Paylasim + " </p><br /></div></div><hr>";
+       
+                                    })
+
+                                    $("#Data").html(veri);
+                                });
+       };
+
+
+
+       function Takip(data){
+      
+               
+               if($("#takipr").hasClass("fa fa-user-plus renk2")){
+
+                   $("#takipr").attr("class","fa fa-user-times renk2");
+                   $("#takipy").html("Takibi&nbsp;Bırak");
+
+                   TakipEt(data);
+
+               }
+               else if($("#takipr").hasClass("fa fa-user-times renk2")){
+                   $("#takipr").attr("class","fa fa-user-plus renk2");
+                   $("#takipy").html("Takibi&nbsp;Et");
+                   TakipBirak(data);
+               }
+
+
+         
+
+       }
+
+           function TakipEt(data){
+               $.post('@Url.Action("Takip","Anasayfa")', { Uyeid: '@Model.Bilgiler.ID', Uyeid2: data }).done(function (msg) {    
+                   window.location.assign("Anasayfa");
+
+               }).fail(function(msg) {
+                   toastr.error(msg);
+               });
+
+           }
+       function TakipBirak(data) {
+           $.post('@Url.Action("TakipKes","Anasayfa")', { Uyeid: '@Model.Bilgiler.ID', Uyeid2: data }).done(function (msg) {
+           }).fail(function (msg) {
+               toastr.error(msg);
+           });
+
+       }
+
+
+
+
+
+
+   </script>
+
+
+
+</div>
+
+
